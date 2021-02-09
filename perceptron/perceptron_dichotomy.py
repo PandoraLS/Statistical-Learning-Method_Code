@@ -38,7 +38,7 @@ def loadData(fileName):
         else:
             labelArr.append(-1)
         #存放标记
-        #[int(num) for num in curLine[1:]] -> 遍历每一行中除了以第一哥元素（标记）外将所有元素转换成int类型
+        #[int(num) for num in curLine[1:]] -> 遍历每一行中除了以第一个元素（标记）外将所有元素转换成int类型
         #[int(num)/255 for num in curLine[1:]] -> 将所有数据除255归一化(非必须步骤，可以不归一化)
         dataArr.append([int(num)/255 for num in curLine[1:]])
 
@@ -56,17 +56,17 @@ def perceptron(dataArr, labelArr, iter=50):
     print('start to trans')
     #将数据转换成矩阵形式（在机器学习中因为通常都是向量的运算，转换称矩阵形式方便运算）
     #转换后的数据中每一个样本的向量都是横向的
-    dataMat = np.mat(dataArr)
+    dataMat = np.mat(dataArr)       # [60000 x 784]
     #将标签转换成矩阵，之后转置(.T为转置)。
     #转置是因为在运算中需要单独取label中的某一个元素，如果是1xN的矩阵的话，无法用label[i]的方式读取
     #对于只有1xN的label可以不转换成矩阵，直接label[i]即可，这里转换是为了格式上的统一
-    labelMat = np.mat(labelArr).T
+    labelMat = np.mat(labelArr).T   # [60000 x 1]
     #获取数据矩阵的大小，为m*n
-    m, n = np.shape(dataMat)
+    m, n = np.shape(dataMat)  # m:60000 n:784
     #创建初始权重w，初始值全为0。
     #np.shape(dataMat)的返回值为m，n -> np.shape(dataMat)[1])的值即为n，与
     #样本长度保持一致
-    w = np.zeros((1, np.shape(dataMat)[1]))
+    w = np.zeros((1, np.shape(dataMat)[1]))  # [1 x 784]
     #初始化偏置b为0
     b = 0
     #初始化步长，也就是梯度下降过程中的n，控制梯度下降速率
@@ -82,12 +82,12 @@ def perceptron(dataArr, labelArr, iter=50):
         #两者的差异各有千秋，但较为常用的是随机梯度下降。
         for i in range(m):
             #获取当前样本的向量
-            xi = dataMat[i]
+            xi = dataMat[i]  # [1 x 784]
             #获取当前样本所对应的标签
-            yi = labelMat[i]
+            yi = labelMat[i] # [1 x 1]
             #判断是否是误分类样本
-            #误分类样本特诊为： -yi(w*xi+b)>=0，详细可参考书中2.2.2小节
-            #在书的公式中写的是>0，实际上如果=0，说明改点在超平面上，也是不正确的
+            #误分类样本特征为： -yi(w*xi+b)>=0，详细可参考书中2.2.2小节
+            #在书的公式中写的是>0，实际上如果=0，说明该点在超平面上，也是不正确的
             if -1 * yi * (w * xi.T + b) >= 0:
                 #对于误分类样本，进行梯度下降，更新w和b
                 w = w + h *  yi * xi
