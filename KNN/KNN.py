@@ -11,10 +11,10 @@
 运行结果：（邻近k数量：25）
 向量距离使用算法——欧式距离
     正确率：97%
-    运行时长：308s
+    运行时长：807s
 向量距离使用算法——曼哈顿距离
-    正确率：14%
-    运行时长：246s
+    正确率：95%
+    运行时长：701.66s
 '''
 
 import numpy as np
@@ -55,12 +55,11 @@ def calcDist(x1, x2):
     :param x2:向量2
     :return:向量之间的欧式距离
     '''
-    return np.sqrt(np.sum(np.square(x1 - x2)))
+    # 欧式距离计算公式
+    # return np.sqrt(np.sum(np.square(x1 - x2)))
 
-    #马哈顿距离计算公式
-    # return np.sum(x1 - x2)
-
-
+    #曼哈顿距离计算公式
+    return np.sum(np.abs(x1 - x2))
 
 
 def getClosest(trainDataMat, trainLabelMat, x, topK):
@@ -82,9 +81,9 @@ def getClosest(trainDataMat, trainLabelMat, x, topK):
     #遍历训练集中所有的样本点，计算与x的距离
     for i in range(len(trainDataMat)):
         #获取训练集中当前样本的向量
-        x1 = trainDataMat[i]
+        x1 = trainDataMat[i] # shape (1,784)
         #计算向量x与训练集样本x的距离
-        curDist = calcDist(x1, x)
+        curDist = calcDist(x1, x)  # 标量
         #将距离放入对应的列表位置中
         distList[i] = curDist
 
@@ -103,7 +102,7 @@ def getClosest(trainDataMat, trainLabelMat, x, topK):
     #这里没有对其进行优化主要原因是KNN的时间耗费大头在计算向量与向量之间的距离上，由于向量高维
     #所以计算时间需要很长，所以如果要提升时间，在这里优化的意义不大。（当然不是说就可以不优化了，
     #主要是我太懒了）
-    topKList = np.argsort(np.array(distList))[:topK]        #升序排序
+    topKList = np.argsort(np.array(distList))[:topK]        #升序排序 shape ndarray(25,)
     #建立一个长度时的列表，用于选择数量最多的标记
     #3.2.4提到了分类决策使用的是投票表决，topK个标记每人有一票，在数组中每个标记代表的位置中投入
     #自己对应的地方，随后进行唱票选择最高票的标记
@@ -115,8 +114,8 @@ def getClosest(trainDataMat, trainLabelMat, x, topK):
         #labelList[int(trainLabelMat[index])]：找到标记在labelList中对应的位置
         #最后加1，表示投了一票
         labelList[int(trainLabelMat[index])] += 1
-    #max(labelList)：找到选票箱中票数最多的票数值
-    #labelList.index(max(labelList))：再根据最大值在列表中找到该值对应的索引，等同于预测的标记
+    # max(labelList)：找到选票箱中票数最多的票数值
+    # labelList.index(max(labelList))：再根据最大值在列表中找到该值对应的索引，等同于预测的标记
     return labelList.index(max(labelList))
 
 
@@ -132,8 +131,10 @@ def model_test(trainDataArr, trainLabelArr, testDataArr, testLabelArr, topK):
     '''
     print('start test')
     #将所有列表转换为矩阵形式，方便运算
-    trainDataMat = np.mat(trainDataArr); trainLabelMat = np.mat(trainLabelArr).T
-    testDataMat = np.mat(testDataArr); testLabelMat = np.mat(testLabelArr).T
+    trainDataMat = np.mat(trainDataArr)  # shape[60000, 784]
+    trainLabelMat = np.mat(trainLabelArr).T  # shape[60000, 1]
+    testDataMat = np.mat(testDataArr)  # shape[10000, 784]
+    testLabelMat = np.mat(testLabelArr).T # shape[10000, 1]
 
     #错误值技术
     errorCnt = 0
@@ -146,7 +147,7 @@ def model_test(trainDataArr, trainLabelArr, testDataArr, testLabelArr, topK):
         # print('test %d:%d'%(i, len(trainDataArr)))
         print('test %d:%d' % (i, 200))
         #读取测试集当前测试样本的向量
-        x = testDataMat[i]
+        x = testDataMat[i]  # shape[1, 784]
         #获取预测的标记
         y = getClosest(trainDataMat, trainLabelMat, x, topK)
         #如果预测标记与实际标记不符，错误值计数加1
@@ -172,6 +173,4 @@ if __name__ == "__main__":
 
     end = time.time()
     #显示花费时间
-    print('time span:', end - start)
-
-
+    print("time span: {:.2f} second".format(end - start))

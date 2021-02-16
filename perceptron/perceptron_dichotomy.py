@@ -9,9 +9,14 @@
 测试集数量：10000
 ------------------------------
 运行结果：
-正确率：81.72%（二分类）
-运行时长：78.6s
+使用归一化操作：dataArr.append([int(num)/255 for num in curLine[1:]])
+    正确率：81.72%（二分类）
+    运行时长：222.87s
+不使用归一化操作：dataArr.append([int(num) for num in curLine[1:]])               # 不归一化
+    正确率：80.29%（二分类）
+    运行时长：233.21s
 '''
+
 
 import numpy as np
 import time
@@ -40,7 +45,8 @@ def loadData(fileName):
         #存放标记
         #[int(num) for num in curLine[1:]] -> 遍历每一行中除了以第一个元素（标记）外将所有元素转换成int类型
         #[int(num)/255 for num in curLine[1:]] -> 将所有数据除255归一化(非必须步骤，可以不归一化)
-        dataArr.append([int(num)/255 for num in curLine[1:]])
+        dataArr.append([int(num)/255 for num in curLine[1:]])         # 归一化
+        # dataArr.append([int(num) for num in curLine[1:]])               # 不归一化
 
     #返回data和label
     return dataArr, labelArr
@@ -88,6 +94,8 @@ def perceptron(dataArr, labelArr, iter=50):
             #判断是否是误分类样本
             #误分类样本特征为： -yi(w*xi+b)>=0，详细可参考书中2.2.2小节
             #在书的公式中写的是>0，实际上如果=0，说明该点在超平面上，也是不正确的
+
+            # tmp = -1 * yi * (w * xi.T + b)   # [1 x 1]
             if -1 * yi * (w * xi.T + b) >= 0:
                 #对于误分类样本，进行梯度下降，更新w和b
                 w = w + h *  yi * xi
@@ -154,5 +162,6 @@ if __name__ == '__main__':
     #显示正确率
     print('accuracy rate is:', accruRate)
     #显示用时时长
-    print('time span:', end - start)
+    print("time span: {:.2f} second".format(end - start))
+
 

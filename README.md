@@ -4,7 +4,6 @@
 力求每行代码都有注释，重要部分注明公式来源。具体会追求下方这样的代码，学习者可以照着公式看程序，让代码有据可查。
 
 ![image](https://github.com/Dod-o/Statistical-Learning-Method_Code/blob/master/CodePic.png)
-
     
 如果时间充沛的话，可能会试着给每一章写一篇博客。先放个博客链接吧：[传送门](http://www.pkudodo.com/)。    
 
