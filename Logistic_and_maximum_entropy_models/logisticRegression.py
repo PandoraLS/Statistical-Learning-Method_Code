@@ -10,8 +10,8 @@
 测试集数量：10000
 ------------------------------
 运行结果：
-    正确率：98.91%
-    运行时长：59s
+    正确率：99.21%
+    运行时长：516.6s
 '''
 
 import time
@@ -33,14 +33,14 @@ def loadData(fileName):
         # 对每一行数据按切割福','进行切割，返回字段列表
         curLine = line.strip().split(',')
 
-        # Mnsit有0-9是个标记，由于是二分类任务，所以将标记0的作为1，其余为0
+        # Mnsit有0-9十个标记，由于是二分类任务，所以将标记0的作为0，大于零的标记为1
         # 验证过<5为1 >5为0时正确率在90%左右，猜测是因为数多了以后，可能不同数的特征较乱，不能有效地计算出一个合理的超平面
         # 查看了一下之前感知机的结果，以5为分界时正确率81，重新修改为0和其余数时正确率98.91%
         # 看来如果样本标签比较杂的话，对于是否能有效地划分超平面确实存在很大影响
         if int(curLine[0]) == 0:
-            labelList.append(1)
-        else:
             labelList.append(0)
+        else:
+            labelList.append(1)
         #存放标记
         #[int(num) for num in curLine[1:]] -> 遍历每一行中除了以第一哥元素（标记）外将所有元素转换成int类型
         #[int(num)/255 for num in curLine[1:]] -> 将所有数据除255归一化(非必须步骤，可以不归一化)
@@ -72,7 +72,7 @@ def logisticRegression(trainDataList, trainLabelList, iter = 200):
     '''
     逻辑斯蒂回归训练过程
     :param trainDataList:训练集
-    :param trainLabelList: 标签集
+    :param trainLabelList: 训练集标签
     :param iter: 迭代次数
     :return: 习得的w
     '''
@@ -92,7 +92,7 @@ def logisticRegression(trainDataList, trainLabelList, iter = 200):
 
     #迭代iter次进行随机梯度下降
     for i in range(iter):
-        #每次迭代冲遍历一次所有样本，进行随机梯度下降
+        #每次迭代，遍历一次所有样本，进行随机梯度下降
         for j in range(trainDataList.shape[0]):
             #随机梯度上升部分
             #在“6.1.3 模型参数估计”一章中给出了似然函数，我们需要极大化似然函数
@@ -161,5 +161,5 @@ if __name__ == '__main__':
     # 打印准确率
     print('the accuracy is:', accuracy)
     # 打印时间
-    print('time span:', time.time() - start)
+    print("time span: {:.2f} second".format(time.time() - start))
 
